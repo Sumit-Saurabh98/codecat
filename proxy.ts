@@ -1,8 +1,7 @@
-import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Get the pathname from the request
   const pathname = request.nextUrl.pathname
 

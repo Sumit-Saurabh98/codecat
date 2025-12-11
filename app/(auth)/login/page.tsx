@@ -1,11 +1,10 @@
 import Login from "@/module/auth/components/Login"
-import { requireUnAuth } from "@/module/auth/utils/auth-utils"
 
-const LoginPage = async ({ searchParams }: { searchParams: { redirect?: string } }) => {
-    await requireUnAuth()
+const LoginPage = async ({ searchParams }: { searchParams: Promise<{ redirect?: string }> }) => {
+  const params = await searchParams
   return (
     <div>
-        <Login redirectTo={searchParams.redirect} />
+        <Login redirectTo={params.redirect} />
     </div>
   )
 }
