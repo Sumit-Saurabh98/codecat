@@ -9,6 +9,70 @@ import { headers } from "next/headers";
 import { Octokit } from "octokit";
 import prisma from "@/lib/db";
 
+export async function getContributionStatus() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      throw new Error("Unauthorized");
+    }
+
+    const token = await getGithubToken();
+
+    if (!token) {
+      throw new Error("GitHub access token not found");
+    }
+
+    const octokit = new Octokit({ auth: token });
+
+    // fetch user github username
+    const { data: user } = await octokit.rest.users.getAuthenticated();
+
+    if (!user.login) {
+      throw new Error("GitHub username not found");
+    }
+
+    const calendar = await fetchUserContributions(token, user.login);
+
+    if (!calendar) {
+      return null;
+    }
+
+    const contributions = calendar.weeks.flatMap((week) =>
+      week.contributionDays.map((day) => {
+        // GitHub contribution levels based on contribution count ranges
+        let level = 0;
+        if (day.contributionCount === 0) {
+          level = 0;
+        } else if (day.contributionCount >= 1 && day.contributionCount <= 9) {
+          level = 1;
+        } else if (day.contributionCount >= 10 && day.contributionCount <= 19) {
+          level = 2;
+        } else if (day.contributionCount >= 20 && day.contributionCount <= 29) {
+          level = 3;
+        } else if (day.contributionCount >= 30) {
+          level = 4;
+        }
+
+        return {
+          date: typeof day.date === 'string' ? day.date : day.date.toISOString().split('T')[0],
+          count: day.contributionCount,
+          level,
+        };
+      })
+    );
+    return {
+      totalContributions: calendar.totalContributions,
+      contributions,
+    };
+  } catch (error) {
+    console.error("Error fetching contribution status:", error);
+    throw error;
+  }
+}
+
 export async function getDashboardStatus() {
   try {
     const session = await auth.api.getSession({
