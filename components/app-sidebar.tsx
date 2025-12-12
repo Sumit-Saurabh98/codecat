@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import Image from "next/image";
 
 export const AppSidebar = () => {
   const [mounted, setMounted] = useState(false);
@@ -61,9 +62,10 @@ export const AppSidebar = () => {
     <Sidebar>
       <SidebarHeader className="border-b border-border">
         <div className="flex items-center gap-3 px-6 py-5">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground shrink-0">
+          {/* <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground shrink-0">
             <Github className="w-5 h-5" />
-          </div>
+          </div> */}
+          <Image src="/logo.png" alt="CodeCat" width={72} height={72} className="rounded-sm" />
           <div className="flex flex-col">
             <span className="text-lg font-bold text-foreground">CodeCat</span>
             <span className="text-xs text-muted-foreground">Code Review Partner</span>
