@@ -53,6 +53,9 @@ export const AppSidebar = () => {
   ];
 
   const isActive = (url: string) => {
+    if (url === "/dashboard") {
+      return pathname === url;
+    }
     return pathname === url || pathname.startsWith(url + "/");
   };
 
