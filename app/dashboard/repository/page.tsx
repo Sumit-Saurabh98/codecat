@@ -9,6 +9,7 @@ import { ExternalLink, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { RepositoryListSkeleton } from "./components/repository-skeleton";
 import { error } from "console";
+import { useConnectRepository } from "@/module/repository/hooks/use-connect-repository";
 
 interface Repository {
   id: number;
@@ -34,6 +35,8 @@ const Repositorypage = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useRepositories();
+
+  const {mutate: connectRepo} = useConnectRepository()
 
   useEffect(()=>{
     const observer = new IntersectionObserver(
@@ -93,7 +96,18 @@ const Repositorypage = () => {
         .includes(searchQuery.toLocaleLowerCase())
   );
 
-  const handleConnect = async (repo: Repository) => {}
+  const handleConnect = async (repo: Repository) => {
+    setLocalConnectingId(repo.id);
+    connectRepo({
+      owner: repo.full_name.split("/")[0],
+      repo: repo.name,
+      githubId: repo.id
+    },
+    {
+      onSettled: () => setLocalConnectingId(null)
+    }
+  )
+  }
 
   return (
     <div className="space-y-4">
