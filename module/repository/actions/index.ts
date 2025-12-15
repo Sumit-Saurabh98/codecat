@@ -43,18 +43,20 @@ export const connectRepository = async (owner:string, repo:string, githubId:numb
 
     const webhook = await createWebhook(owner, repo)
 
-    if(webhook){
-        await prisma.repository.create({
-            data: {
-                githubId: BigInt(githubId),
-                name: repo,
-                owner,
-                fullname: `${owner}/${repo}`,
-                url: `https://github.com/${owner}/${repo}`,
-                userId: session.user.id,
-            }
-        })
+    if(!webhook){
+        throw new Error(`Cannot connect repository ${owner}/${repo}. You need admin permissions to create webhooks on this repository. Please contact the repository owner to grant you admin access, or choose a repository where you have admin rights.`)
     }
+
+    await prisma.repository.create({
+        data: {
+            githubId: BigInt(githubId),
+            name: repo,
+            owner,
+            fullname: `${owner}/${repo}`,
+            url: `https://github.com/${owner}/${repo}`,
+            userId: session.user.id,
+        }
+    })
 
     // TODO: INCREASE REPOSITORY COUNT FOR USES TRACKING
 
@@ -70,9 +72,8 @@ export const connectRepository = async (owner:string, repo:string, githubId:numb
             }
         })
     } catch (error) {
-        console.log(" Failed tot trigger repository indexing: ",error)
+        console.log(" Failed to trigger repository indexing: ",error)
     }
 
     return webhook
 }
-

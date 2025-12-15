@@ -110,28 +110,39 @@ export const createWebhook = async (owner: string, repo: string) => {
 
   const webhookuRL = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/webhooks/github`;
 
-  const { data: hooks } = await octokit.rest.repos.listWebhooks({
-    owner,
-    repo,
-  });
+  try {
+    // First check if user has permission to list webhooks (requires admin access)
+    const { data: hooks } = await octokit.rest.repos.listWebhooks({
+      owner,
+      repo,
+    });
 
-  const existingHook = hooks.find((hook) => hook.config.url === webhookuRL);
+    const existingHook = hooks.find((hook) => hook.config.url === webhookuRL);
 
-  if (existingHook) {
-    return existingHook;
+    if (existingHook) {
+      return existingHook;
+    }
+
+    const { data } = await octokit.rest.repos.createWebhook({
+      owner,
+      repo,
+      config: {
+        url: webhookuRL,
+        content_type: "json",
+      },
+      events: ["pull_request"],
+    });
+
+    return data;
+  } catch (error: any) {
+    // If user doesn't have permission to manage webhooks
+    if (error.status === 404 || error.status === 403) {
+      console.warn(`Cannot create webhook for ${owner}/${repo}: Insufficient permissions. User needs admin access to create webhooks.`);
+      // Return null to indicate webhook creation failed due to permissions
+      return null;
+    }
+    throw error;
   }
-
-  const { data } = await octokit.rest.repos.createWebhook({
-    owner,
-    repo,
-    config: {
-      url: webhookuRL,
-      content_type: "json",
-    },
-    events: ["pull_request"],
-  });
-
-  return data;
 };
 
 export const deleteWebhook = async (owner: string, repo: string) => {
