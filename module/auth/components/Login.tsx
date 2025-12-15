@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Github,
   Code2,
@@ -8,22 +9,30 @@ import {
   Activity,
   Sparkles,
 } from "lucide-react";
-import { signIn } from "@/lib/auth-client";
+import { signIn, useSession } from "@/lib/auth-client";
 
 const Login = ({ redirectTo }: { redirectTo?: string }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { data: session, isPending } = useSession();
+
+  // Handle redirect after successful authentication
+  useEffect(() => {
+    if (session && !isPending) {
+      const redirectUrl = redirectTo || searchParams.get('redirect') || "/dashboard";
+      router.push(redirectUrl);
+    }
+  }, [session, isPending, redirectTo, searchParams, router]);
 
   const handleGithubLogin = async () => {
     setIsLoading(true);
     try {
       await signIn.social({
         provider: "github",
-        callbackURL: redirectTo || "/dashboard",
       });
     } catch (error) {
       console.error("Login error", error);
-      setIsLoading(false);
-    } finally {
       setIsLoading(false);
     }
   };

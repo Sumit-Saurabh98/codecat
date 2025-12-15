@@ -15,3 +15,6 @@ export const auth = betterAuth({
         },
     },
 });
+
+// Export the auth instance for middleware
+export { auth as betterAuth };
