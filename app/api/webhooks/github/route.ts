@@ -15,12 +15,19 @@ export async function POST(req:NextRequest){
             const repo = body.repository.full_name;
             const prNumber = body.number;
 
+            console.log(`Received PR webhook: ${action} on ${repo} #${prNumber}`);
+
             const [owner, repoName] = repo.split("/")
 
             if(action === "opened" || action === "synchronize"){
+                console.log(`Processing PR review for ${owner}/${repoName} #${prNumber}`);
                 reviewPullRequest(owner, repoName, prNumber)
-                .then(()=>console.log(`Review completed for ${repo} #${prNumber}`))
-                .catch((error)=>console.error(`Failed to review pull request for ${repo} #${prNumber}`, error))
+                .then((result)=>{
+                    console.log(`Review queued for ${repo} #${prNumber}:`, result);
+                })
+                .catch((error)=>{
+                    console.error(`Failed to queue review for ${repo} #${prNumber}:`, error);
+                })
             }
         }
 

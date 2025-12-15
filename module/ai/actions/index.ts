@@ -9,6 +9,8 @@ export async function reviewPullRequest(
   repo: string,
   prNumber: number
 ) {
+  console.log(`Starting review process for ${owner}/${repo} #${prNumber}`);
+
   try {
     const repository = await prisma.repository.findFirst({
     where: {
@@ -32,17 +34,23 @@ export async function reviewPullRequest(
     throw new Error(`Repository ${owner}/${repo} not found in database. Please reconnect the repository.`);
   }
 
+  console.log(`Found repository in DB: ${repository.id}`);
+
   const githubAccount = repository.user.accounts[0];
 
   if(!githubAccount?.accessToken){
     throw new Error("Github access token not found")
   }
 
+  console.log(`Found GitHub access token for user: ${repository.user.id}`);
+
   const token = githubAccount.accessToken;
 
   const {title} = await getPullRequestDiff(token, owner, repo, prNumber)
 
-  await inngest.send({
+  console.log(`Fetched PR diff. Title: "${title}". Sending to Inngest...`);
+
+  const result = await inngest.send({
     name: "pr.review-requested",
     data: {
       owner,
@@ -51,6 +59,8 @@ export async function reviewPullRequest(
       userId: repository.user.id,
     },
   });
+
+  console.log(`Inngest event sent successfully:`, result);
 
   return {success:true, message:"Review Queued"}
   } catch (error) {
