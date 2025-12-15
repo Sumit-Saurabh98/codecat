@@ -13,15 +13,14 @@ export async function POST(req:NextRequest){
         if(event === "pull_request"){
             const action = body.action;
             const repo = body.repository.full_name;
+            const repoId = body.repository.id;
             const prNumber = body.number;
 
-            console.log(`Received PR webhook: ${action} on ${repo} #${prNumber}`);
+            console.log(`Received PR webhook: ${action} on ${repo} #${prNumber} (ID: ${repoId})`);
 
-            const [owner, repoName] = repo.split("/")
-
-            if(action === "opened" || action === "synchronize"){
-                console.log(`Processing PR review for ${owner}/${repoName} #${prNumber}`);
-                reviewPullRequest(owner, repoName, prNumber)
+            if(action === "opened" || action === "synchronize" || action === "review_requested"){
+                console.log(`Processing PR review for ${repo} #${prNumber} with action: ${action}`);
+                reviewPullRequest(repoId, prNumber)
                 .then((result)=>{
                     console.log(`Review queued for ${repo} #${prNumber}:`, result);
                 })
