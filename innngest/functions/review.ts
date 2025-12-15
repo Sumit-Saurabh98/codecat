@@ -6,11 +6,13 @@ import { google } from "@ai-sdk/google";
 import prisma from "@/lib/db";
 
 export const generateReview = inngest.createFunction(
-  { id: "generate-review", concurrency: 5 },
+  { id: "generate-review", concurrency: 1 },
   { event: "pr.review-requested" },
 
   async ({ event, step }) => {
     const { owner, repo, prNumber, userId } = event.data;
+
+    console.log(`🚀 Starting generateReview function for ${owner}/${repo} #${prNumber}`);
 
     const { diff, title, description, token } = await step.run(
       "fetch-pr-data",
@@ -101,6 +103,8 @@ Format your response in markdown.`;
         });
       }
     });
+
+    console.log(`✅ Completed generateReview function for ${owner}/${repo} #${prNumber}`);
     return { success: true };
   }
 );
