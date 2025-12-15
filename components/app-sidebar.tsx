@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
-import { Github, Settings, LayoutDashboard, CircleDollarSign, MessageCircleCode } from "lucide-react";
+import { Github, Settings, LayoutDashboard, MessageCircleCode } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
@@ -44,11 +44,6 @@ export const AppSidebar = () => {
       icon: MessageCircleCode,
     },
     {
-      title: "Subscription",
-      url: "/dashboard/subscription",
-      icon: CircleDollarSign,
-    },
-    {
       title: "Settings",
       url: "/dashboard/settings",
       icon: Settings,
@@ -67,7 +62,7 @@ export const AppSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-border">
-        <div className="flex items-center gap-3 px-6 py-5" onClick={()=>naviagtion.push("/dashboard")}>
+        <div className="flex items-center gap-3 px-6 py-5 cursor-pointer" onClick={()=>naviagtion.push("/dashboard")}>
           {/* <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground shrink-0">
             <Github className="w-5 h-5" />
           </div> */}
