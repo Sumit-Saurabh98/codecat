@@ -12,6 +12,7 @@ export async function reviewPullRequest(
   console.log(`Starting review process for ${owner}/${repo} #${prNumber}`);
 
   try {
+    console.log(`Looking up repository ${owner}/${repo} in database...`);
     const repository = await prisma.repository.findFirst({
     where: {
       owner,
@@ -64,12 +65,14 @@ export async function reviewPullRequest(
 
   return {success:true, message:"Review Queued"}
   } catch (error) {
+    console.error(`Error in reviewPullRequest for ${owner}/${repo} #${prNumber}:`, error);
+
     try {
         const repository = await prisma.repository.findFirst({
           where: {
             owner,
             name: repo,
-          }  
+          }
         })
 
         if(repository){
@@ -85,7 +88,9 @@ export async function reviewPullRequest(
             })
         }
     } catch (dberror) {
-        console.error("Database error:", dberror);
+        console.error("Database error when saving failed review:", dberror);
     }
+
+    throw error; // Re-throw so the webhook handler can catch it
   }
 }
