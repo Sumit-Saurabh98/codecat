@@ -1,24 +1,22 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { auth } from "@/lib/auth"
 
 export async function middleware(request: NextRequest) {
-  // Handle Better Auth API routes
-  if (request.nextUrl.pathname.startsWith('/api/auth')) {
-    return auth.handler(request);
-  }
-
   // Get the pathname from the request
   const pathname = request.nextUrl.pathname
 
+  // Skip middleware for API routes (let them handle auth themselves)
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next()
+  }
+
   // Protect all routes that start with /dashboard
   if (pathname.startsWith("/dashboard")) {
-    // Check for session cookie or header
+    // Check for session cookie
     const sessionCookie = request.cookies.get("better-auth.session_token")?.value
-    const authorizationHeader = request.headers.get("authorization")
 
     // If no session cookie exists, redirect to login
-    if (!sessionCookie && !authorizationHeader) {
+    if (!sessionCookie) {
       const loginUrl = new URL("/login", request.url)
       // Add the current path as a redirect parameter so user can be redirected back after login
       loginUrl.searchParams.set("redirect", pathname)
