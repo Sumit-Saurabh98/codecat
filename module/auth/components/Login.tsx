@@ -21,7 +21,8 @@ const Login = ({ redirectTo }: { redirectTo?: string }) => {
   useEffect(() => {
     if (session && !isPending) {
       // User is authenticated, redirect to intended destination
-      const redirectUrl = redirectTo || searchParams.get('redirect') || "/dashboard";
+      const redirectUrl =
+        redirectTo || searchParams.get("redirect") || "/dashboard";
       // Small delay to ensure redirect happens after component renders
       const timer = setTimeout(() => {
         router.push(redirectUrl);
