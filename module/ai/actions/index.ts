@@ -51,7 +51,7 @@ export async function reviewPullRequest(
 
   console.log(`Fetched PR diff. Title: "${title}". Sending to Inngest...`);
 
-  const result = await inngest.send({
+  const eventData = {
     name: "pr.review-requested",
     data: {
       owner,
@@ -59,7 +59,11 @@ export async function reviewPullRequest(
       prNumber,
       userId: repository.user.id,
     },
-  });
+  };
+
+  console.log(`Sending Inngest event:`, JSON.stringify(eventData, null, 2));
+
+  const result = await inngest.send(eventData);
 
   console.log(`Inngest event sent successfully:`, result);
 
