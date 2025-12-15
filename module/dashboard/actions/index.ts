@@ -97,8 +97,12 @@ export async function getDashboardStatus() {
       throw new Error("GitHub username not found");
     }
 
-    // TODO: FETCH TOTAL CONNECTED REPO FROM DB
-    const totalRepos = 30;
+    // Fetch total connected repositories from DB for this user
+    const totalRepos = await prisma.repository.count({
+      where: {
+        userId: session.user.id,
+      },
+    });
 
     const calendar = await fetchUserContributions(token, user.login);
     const totalCommits = calendar?.totalContributions || 0;
@@ -111,8 +115,14 @@ export async function getDashboardStatus() {
 
     const totalPRs = prs.total_count;
 
-    // TODO: COUNT AI REVIEWS FROM DB
-    const totalReviews = 44;
+    // Count AI reviews from DB for this user
+    const totalReviews = await prisma.review.count({
+      where: {
+        repository: {
+          userId: session.user.id,
+        },
+      },
+    });
 
     return {
       totalRepos,
@@ -196,30 +206,23 @@ export async function getMonthlyActivity() {
     });
 
     // fetch reviews from database for last 6 months
-
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-    // TODO: FETCH REVIEWS REAL DATA
-    const generateSampleReviews = () => {
-      const sampleReviews = [];
-      const now = new Date();
-
-      // Generate reviews over the past 6 months
-      for (let i = 0; i < 45; i++) {
-        const randomDaysAgo = Math.floor(Math.random() * 180); // Random number of days within 6 months
-        const reviewDate = new Date(now);
-        reviewDate.setDate(reviewDate.getDate() - randomDaysAgo);
-
-        sampleReviews.push({
-          createdAt: reviewDate,
-        });
-      }
-
-      return sampleReviews;
-    };
-
-    const reviews = generateSampleReviews();
+    // Fetch real reviews data from database
+    const reviews = await prisma.review.findMany({
+      where: {
+        repository: {
+          userId: session.user.id,
+        },
+        createdAt: {
+          gte: sixMonthsAgo,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+    });
 
     reviews.forEach((review) => {
       const monthKey = monthNames[review.createdAt.getMonth()];
@@ -250,5 +253,39 @@ export async function getMonthlyActivity() {
   } catch (error) {
     console.error("Error fetching monthly activity:", error);
     throw error;
+  }
+}
+
+export async function getLandingPageStats() {
+  try {
+    // Get total users count
+    const totalUsers = await prisma.user.count();
+
+    // Get total repositories count
+    const totalRepositories = await prisma.repository.count();
+
+    // Get total reviews count (assuming there's a review table - adjust based on your schema)
+    // For now, using a placeholder since I don't see a review table in the schema
+    const totalReviews = await prisma.review.count().catch(() => 0);
+
+    // Get total PRs reviewed (this would need to be tracked separately or estimated)
+    // For now, using total reviews as approximation
+    const totalPRsReviewed = totalReviews;
+
+    return {
+      totalUsers: totalUsers || 0,
+      totalRepositories: totalRepositories || 0,
+      totalReviews: totalReviews || 0,
+      totalPRsReviewed: totalPRsReviewed || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching landing page stats:", error);
+    // Return fallback values
+    return {
+      totalUsers: 0,
+      totalRepositories: 0,
+      totalReviews: 0,
+      totalPRsReviewed: 0,
+    };
   }
 }

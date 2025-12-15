@@ -46,7 +46,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-4">
           <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1 cursor-pointer hover:bg-accent rounded-md p-2 transition-colors" />
+            <SidebarTrigger className="-ml-1 cursor-point hover:bg-accent rounded-md p-2 transition-colors" />
             <Separator orientation="vertical" className="mx-2 h-4" />
             <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
           </div>
@@ -58,7 +58,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 variant="outline"
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="rounded-lg hover:bg-accent border-border cursor-pointer"
+                className="rounded-lg hover:bg-accent border-border cursor-point"
               >
                 {theme === "dark" ? (
                   <Sun className="h-[1.2rem] w-[1.2rem]" />
@@ -77,7 +77,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full ring-2 ring-border hover:ring-primary transition-all cursor-pointer"
+                    className="relative h-10 w-10 rounded-full ring-2 ring-border hover:ring-primary transition-all cursor-point"
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={userAvatar || "/profile.png"} />
@@ -112,7 +112,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive rounded-md">
+                  <DropdownMenuItem className="cursor-point text-destructive focus:text-destructive rounded-md">
                     <Logout className="w-full flex items-center gap-2">
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out

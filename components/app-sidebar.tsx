@@ -13,11 +13,14 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export const AppSidebar = () => {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+
+  const naviagtion = useRouter()
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,7 +67,7 @@ export const AppSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-border">
-        <div className="flex items-center gap-3 px-6 py-5">
+        <div className="flex items-center gap-3 px-6 py-5" onClick={()=>naviagtion.push("/dashboard")}>
           {/* <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground shrink-0">
             <Github className="w-5 h-5" />
           </div> */}

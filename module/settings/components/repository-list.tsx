@@ -114,7 +114,7 @@ const RepositoryList = () => {
               onOpenChange={setDisconnectedAllOpen}
             >
               <AlertDialogTrigger asChild>
-                <Button variant={"destructive"} size={"sm"} className="cursor-pointer">
+                <Button variant={"destructive"} size={"sm"} className="cursor-point">
                   <Trash2 className="mr-2 h-4 w-4" />
                   Disconnect All
                 </Button>
@@ -173,7 +173,7 @@ const RepositoryList = () => {
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant={"ghost"} size={"sm"} className="ml-4 text-destractive hover:text-destructive hover:bg-destructive/10 cursor-pointer">
+                    <Button variant={"ghost"} size={"sm"} className="ml-4 text-destractive hover:text-destructive hover:bg-destructive/10 cursor-point">
                       <Trash2 className="mr-2 h-4 w-4" />
                       Disconnect
                     </Button>

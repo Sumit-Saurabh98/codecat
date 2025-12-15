@@ -57,7 +57,7 @@ export function ConfirmDialog({
         <AlertDialogFooter className="gap-2 sm:gap-2">
           <AlertDialogCancel
             disabled={loading}
-            className="border-border hover:bg-accent hover:text-accent-foreground cursor-pointer"
+            className="border-border hover:bg-accent hover:text-accent-foreground cursor-point"
           >
             {cancelText}
           </AlertDialogCancel>
@@ -66,8 +66,8 @@ export function ConfirmDialog({
             disabled={loading}
             className={
               variant === "destructive"
-                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
-                : "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-point"
+                : "bg-primary text-primary-foreground hover:bg-primary/90 cursor-point"
             }
           >
             {loading ? "Processing..." : confirmText}

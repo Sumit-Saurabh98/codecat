@@ -3,6 +3,7 @@ import { signOut } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { cn } from "@/lib/utils"
 
 const Logout = ({
     children,
@@ -40,7 +41,7 @@ const Logout = ({
     <>
       <span
           onClick={openConfirmDialog}
-          className={className}
+          className={cn(className, "cursor-point")}
       >
           {children}
       </span>

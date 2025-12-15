@@ -172,3 +172,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.cursor-point {
+  cursor: pointer;
+}
