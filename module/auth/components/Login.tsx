@@ -36,8 +36,14 @@ const Login = ({ redirectTo }: { redirectTo?: string }) => {
       await signIn.social({
         provider: "github",
       });
+      // After initiating social sign-in, navigate to the dashboard
+      const redirectUrl = redirectTo || "/dashboard";
+      setTimeout(() => {
+        router.push(redirectUrl);
+      }, 100);
     } catch (error) {
       console.error("Login error", error);
+    } finally {
       setIsLoading(false);
     }
   };
