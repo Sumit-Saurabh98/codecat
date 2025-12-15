@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { auth } from "@/lib/auth"
 
 export async function middleware(request: NextRequest) {
   // Handle Better Auth API routes
@@ -7,23 +8,29 @@ export async function middleware(request: NextRequest) {
     return auth.handler(request);
   }
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    // Check for session cookie (better-auth.session_token)
-    const sessionToken = request.cookies.get('better-auth.session_token')?.value;
+  // Get the pathname from the request
+  const pathname = request.nextUrl.pathname
 
-    if (!sessionToken) {
-      // Redirect to login with the current path as redirect
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
-      return NextResponse.redirect(loginUrl);
+  // Protect all routes that start with /dashboard
+  if (pathname.startsWith("/dashboard")) {
+    // Check for session cookie or header
+    const sessionCookie = request.cookies.get("better-auth.session_token")?.value
+    const authorizationHeader = request.headers.get("authorization")
+
+    // If no session cookie exists, redirect to login
+    if (!sessionCookie && !authorizationHeader) {
+      const loginUrl = new URL("/login", request.url)
+      // Add the current path as a redirect parameter so user can be redirected back after login
+      loginUrl.searchParams.set("redirect", pathname)
+      return NextResponse.redirect(loginUrl)
     }
 
-    // Optional: Validate session token exists (basic check)
-    // You could add more validation here if needed
+    // For more thorough validation, you could make an API call to verify the session
+    // But for performance, cookie presence is usually sufficient
   }
 
-  return NextResponse.next();
+  // Allow the request to continue
+  return NextResponse.next()
 }
 
 export const config = {
@@ -34,7 +41,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public files with extensions
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.).*)",
   ],
-};
+}
